@@ -3,47 +3,56 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import elementType from 'prop-types-extra/lib/elementType';
 
-import { bsClass, prefix, splitBsProps } from './utils/bootstrapUtils';
+import { createBootstrapComponent } from './ThemeProvider';
 
 const propTypes = {
-  horizontal: PropTypes.bool,
+  /**
+   * @default {'form'}
+   */
+  bsPrefix: PropTypes.string,
+
+  /**
+   * The Form `ref` will be forwarded to the underlying form element,
+   * which means, unless `componentClass` is a composite component,
+   * it will be a DOM node, when resolved.
+   *
+   * @type {ReactRef}
+   * @alias innerRef
+   */
+  ref: PropTypes.any,
+
+  /**
+   * Display the series of labels, form controls,
+   * and buttons on a single horizontal row
+   */
   inline: PropTypes.bool,
+
   componentClass: elementType
 };
 
 const defaultProps = {
-  horizontal: false,
   inline: false,
   componentClass: 'form'
 };
 
-class Form extends React.Component {
-  render() {
-    const {
-      horizontal,
-      inline,
-      componentClass: Component,
-      className,
-      ...props
-    } = this.props;
-
-    const [bsProps, elementProps] = splitBsProps(props);
-
-    const classes = [];
-    if (horizontal) {
-      classes.push(prefix(bsProps, 'horizontal'));
-    }
-    if (inline) {
-      classes.push(prefix(bsProps, 'inline'));
-    }
-
-    return (
-      <Component {...elementProps} className={classNames(className, classes)} />
-    );
-  }
+function Form({
+  bsPrefix,
+  inline,
+  className,
+  innerRef, // eslint-disable-line
+  componentClass: Component,
+  ...props
+}) {
+  return (
+    <Component
+      {...props}
+      ref={innerRef}
+      className={classNames(className, inline && `${bsPrefix}-inline`)}
+    />
+  );
 }
 
 Form.propTypes = propTypes;
 Form.defaultProps = defaultProps;
 
-export default bsClass('form', Form);
+export default createBootstrapComponent(Form, 'form');

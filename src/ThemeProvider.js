@@ -20,18 +20,23 @@ class ThemeProvider extends React.Component {
   }
 }
 
-function createBootstrapComponent(Component, prefix) {
+function createBootstrapComponent(Component, opts) {
+  if (typeof opts === 'string') opts = { prefix: opts };
+  const isClassy = Component.prototype && Component.prototype.isReactComponent;
+  // If it's a functional component make sure we don't break it with a ref
+  const { prefix, forwardRefAs = isClassy ? 'ref' : 'innerRef' } = opts;
+
   const name = Component.displayName || Component.name;
   // This looks like a function component but it's not,
   // it's passed to forwardRef directly, and named for the dev-tools
   // eslint-disable-next-line react/prop-types
   function forwardRef({ bsPrefix, ...props }, ref) {
+    props[forwardRefAs] = ref;
     return (
       <Consumer>
         {variants => (
           <Component
             {...props}
-            ref={ref}
             bsPrefix={bsPrefix || variants.get(prefix) || prefix}
           />
         )}
