@@ -13,3 +13,6 @@ tmp-bower-repo/
 tmp-docs-repo/
 .babel-cache/
 .coverage/
+
+.idea/
+package-lock.json
